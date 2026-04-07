@@ -1,0 +1,825 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>TU BBS 2nd Year 2082 • Results</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <style>
+    :root {
+      --bg: #07111f;
+      --bg-2: #0b1628;
+      --card: rgba(15, 23, 42, 0.86);
+      --card-2: rgba(17, 24, 39, 0.92);
+      --border: rgba(148, 163, 184, 0.14);
+      --text: #e5eefb;
+      --muted: #8ea0b8;
+      --primary: #22c55e;
+      --primary-2: #10b981;
+      --danger: #ef4444;
+      --warn: #f59e0b;
+      --shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+      --radius-xl: 24px;
+      --radius-lg: 18px;
+      --radius-md: 14px;
+    }* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; min-height: 100%; }
+body {
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background:
+    radial-gradient(circle at top, rgba(16, 185, 129, 0.15), transparent 35%),
+    radial-gradient(circle at 80% 0%, rgba(59, 130, 246, 0.12), transparent 25%),
+    linear-gradient(180deg, #050a12 0%, var(--bg) 100%);
+  color: var(--text);
+  overflow-x: hidden;
+}
+
+.app {
+  max-width: 520px;
+  margin: 0 auto;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.02), var(--shadow);
+  background: rgba(5, 10, 18, 0.4);
+  backdrop-filter: blur(14px);
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  padding: 18px 18px 14px;
+  background: linear-gradient(180deg, rgba(7, 17, 31, 0.98) 0%, rgba(7, 17, 31, 0.85) 100%);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(18px);
+}
+
+.brand-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.35rem;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  font-weight: 800;
+}
+.subtitle {
+  margin-top: 6px;
+  color: var(--primary);
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.live-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(34, 197, 94, 0.25);
+  background: rgba(34, 197, 94, 0.08);
+  color: #b6f7ca;
+  padding: 10px 12px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--primary);
+  box-shadow: 0 0 0 0 rgba(34,197,94,0.55);
+  animation: pulse 1.8s infinite;
+}
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(34,197,94,0.45); }
+  70% { box-shadow: 0 0 0 10px rgba(34,197,94,0); }
+  100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); }
+}
+
+.tabs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  padding: 14px 14px 16px;
+  position: sticky;
+  top: 77px;
+  z-index: 45;
+  background: linear-gradient(180deg, rgba(7, 17, 31, 0.98), rgba(7, 17, 31, 0.90));
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(18px);
+}
+
+.tab-btn {
+  border: 1px solid var(--border);
+  background: rgba(15, 23, 42, 0.78);
+  color: #a9b9cf;
+  border-radius: 999px;
+  padding: 11px 10px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 42px;
+}
+.tab-btn:hover { transform: translateY(-1px); border-color: rgba(34,197,94,0.28); }
+.tab-btn.active {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(34, 197, 94, 0.16));
+  color: white;
+  border-color: rgba(34, 197, 94, 0.35);
+  box-shadow: 0 10px 30px rgba(16, 185, 129, 0.15);
+}
+
+.content {
+  padding: 16px 14px 90px;
+  flex: 1;
+}
+
+.panel { display: none; animation: fadeIn 0.22s ease; }
+.panel.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.card {
+  background: linear-gradient(180deg, rgba(17, 24, 39, 0.95), rgba(15, 23, 42, 0.84));
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow);
+}
+
+.stat-card { padding: 18px; }
+.stat-label { color: var(--muted); font-size: 0.82rem; font-weight: 700; letter-spacing: 0.02em; }
+.stat-value { font-size: 2rem; font-weight: 900; letter-spacing: -0.04em; margin-top: 8px; }
+.stat-sub { margin-top: 10px; color: var(--muted); font-size: 0.78rem; }
+.text-green { color: #5ee9a0; }
+.text-red { color: #ff7b7b; }
+.text-amber { color: #fbbf24; }
+
+.info-row {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 12px;
+  margin-top: 12px;
+}
+.info-card { padding: 16px 18px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.info-title { color: #d6e1ef; font-size: 0.92rem; font-weight: 600; }
+.info-meta { color: var(--muted); font-size: 0.76rem; margin-top: 5px; }
+.score-big { font-size: 1.5rem; font-weight: 900; letter-spacing: -0.03em; text-align: right; }
+
+.section-title {
+  margin: 18px 0 10px;
+  color: #dbe7f7;
+  font-size: 0.9rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.toolbar {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.input, .select {
+  width: 100%;
+  border-radius: 18px;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  background: rgba(15, 23, 42, 0.9);
+  color: var(--text);
+  padding: 14px 16px;
+  font-size: 0.95rem;
+  outline: none;
+  transition: 0.2s ease;
+}
+.input::placeholder { color: #8092aa; }
+.input:focus, .select:focus {
+  border-color: rgba(34, 197, 94, 0.5);
+  box-shadow: 0 0 0 4px rgba(34,197,94,0.12);
+}
+
+.select { padding-right: 36px; }
+
+.table-wrap {
+  overflow: auto;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border);
+  background: rgba(9, 14, 24, 0.82);
+  box-shadow: var(--shadow);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 100%;
+}
+
+thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: rgba(10, 17, 30, 0.98);
+  color: #9fb2cb;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  border-bottom: 1px solid rgba(148,163,184,0.14);
+  padding: 14px 12px;
+  text-align: left;
+  white-space: nowrap;
+}
+
+tbody td {
+  padding: 14px 12px;
+  border-bottom: 1px solid rgba(148,163,184,0.09);
+  vertical-align: middle;
+  font-size: 0.92rem;
+}
+
+tbody tr:hover { background: rgba(255,255,255,0.03); }
+
+.mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+.right { text-align: right; }
+.center { text-align: center; }
+.name { font-weight: 700; color: #f5f7fb; }
+.subtle { color: var(--muted); font-size: 0.78rem; }
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+.badge.pass { background: rgba(34, 197, 94, 0.1); color: #82f0ad; border-color: rgba(34, 197, 94, 0.18); }
+.badge.fail { background: rgba(239, 68, 68, 0.12); color: #ff9090; border-color: rgba(239, 68, 68, 0.18); }
+
+.search-hero {
+  text-align: center;
+  margin-bottom: 18px;
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: rgba(34, 197, 94, 0.08);
+  border: 1px solid rgba(34, 197, 94, 0.18);
+  color: #baf3cd;
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.result-card {
+  background: linear-gradient(180deg, rgba(17,24,39,0.96), rgba(15,23,42,0.88));
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+  box-shadow: var(--shadow);
+}
+.result-score { text-align: right; }
+.score-xl { font-size: 1.45rem; font-weight: 900; line-height: 1; }
+
+.empty, .loading, .error-box {
+  padding: 20px;
+  text-align: center;
+  color: var(--muted);
+  background: rgba(17,24,39,0.9);
+  border: 1px dashed rgba(148,163,184,0.2);
+  border-radius: 22px;
+}
+
+.subject-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.subject-card {
+  padding: 14px 14px 8px;
+}
+.subject-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.subject-name { font-size: 0.93rem; font-weight: 800; line-height: 1.3; }
+.subject-symbol { color: var(--muted); font-size: 0.78rem; margin-top: 4px; }
+.marks-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  padding-bottom: 12px;
+}
+.mark-pill {
+  border-radius: 16px;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  background: rgba(2, 6, 23, 0.35);
+  padding: 10px 10px;
+  text-align: center;
+}
+.mark-label { color: var(--muted); font-size: 0.72rem; font-weight: 700; }
+.mark-value { margin-top: 4px; font-size: 0.98rem; font-weight: 800; }
+.span-2 { grid-column: span 2; }
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  max-width: 520px;
+  margin: 0 auto;
+  z-index: 60;
+  background: linear-gradient(180deg, rgba(8, 15, 27, 0.6), rgba(8, 15, 27, 0.98));
+  border-top: 1px solid var(--border);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+  backdrop-filter: blur(16px);
+}
+
+.nav-btn {
+  border: 0;
+  background: transparent;
+  color: #8ea0b8;
+  padding: 8px 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+.nav-btn.active { color: #d9ffeb; background: rgba(34,197,94,0.1); }
+.nav-ico { font-size: 1.1rem; line-height: 1; }
+
+.note {
+  margin: 12px 0 0;
+  color: #aec0d7;
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+.spinner {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid rgba(34,197,94,0.25);
+  border-top-color: rgba(34,197,94,1);
+  animation: spin 0.8s linear infinite;
+  display: inline-block;
+  vertical-align: middle;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 420px) {
+  .title { font-size: 1.2rem; }
+  .tabs { top: 76px; grid-template-columns: repeat(2, 1fr); }
+  .grid-2, .info-row, .toolbar { grid-template-columns: 1fr; }
+  .content { padding-bottom: 100px; }
+  tbody td, thead th { padding-left: 10px; padding-right: 10px; }
+}
+
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand-row">
+        <div>
+          <h1 class="title">TU BBS 2nd Year</h1>
+          <div class="subtitle">2082 • Janta ko result kharab</div>
+        </div>
+        <div class="live-pill"><span class="dot"></span><span id="total-students">0</span> Students</div>
+      </div>
+    </header><nav class="tabs">
+  <button class="tab-btn active" id="tab-0" onclick="switchTab(0)">📊 Summary</button>
+  <button class="tab-btn" id="tab-1" onclick="switchTab(1)">📋 Results</button>
+  <button class="tab-btn" id="tab-2" onclick="switchTab(2)">🔍 Search</button>
+  <button class="tab-btn" id="tab-3" onclick="switchTab(3)">📈 Subjects</button>
+</nav>
+
+<main class="content">
+  <section id="content-0" class="panel active">
+    <div class="grid-2">
+      <div class="card stat-card">
+        <div class="stat-label">PASSED</div>
+        <div class="stat-value text-green" id="passed-count">0</div>
+        <div class="stat-sub"><span id="pass-rate">0%</span> pass rate</div>
+      </div>
+      <div class="card stat-card">
+        <div class="stat-label">FAILED</div>
+        <div class="stat-value text-red" id="failed-count">0</div>
+        <div class="stat-sub">Students below threshold</div>
+      </div>
+    </div>
+
+    <div class="info-row">
+      <div class="card info-card">
+        <div>
+          <div class="info-title">Highest Score</div>
+          <div class="info-meta" id="highest-name">-</div>
+        </div>
+        <div class="score-big text-green" id="highest-score">0%</div>
+      </div>
+      <div class="card info-card">
+        <div>
+          <div class="info-title">Highest Fail</div>
+          <div class="info-meta" id="highest-fail-name">-</div>
+        </div>
+        <div class="score-big text-amber" id="highest-fail">0%</div>
+      </div>
+    </div>
+
+    <div class="card info-card" style="margin-top:12px;">
+      <div>
+        <div class="info-title">Average Score</div>
+        <div class="info-meta">All listed students</div>
+      </div>
+      <div class="score-big" id="avg-score">0%</div>
+    </div>
+
+    <p class="note">Data is loaded from <span class="mono">results.xlsx</span> in the same folder as this page.</p>
+  </section>
+
+  <section id="content-1" class="panel">
+    <div class="toolbar">
+      <input id="results-search" class="input" oninput="filterResults()" type="text" placeholder="Search name or symbol..." />
+      <select id="results-filter" class="select" onchange="filterResults()">
+        <option value="all">All</option>
+        <option value="PASS">Passed</option>
+        <option value="FAIL">Failed</option>
+      </select>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Rank</th>
+            <th>Symbol</th>
+            <th>Student</th>
+            <th class="right">%</th>
+            <th class="center">Result</th>
+          </tr>
+        </thead>
+        <tbody id="results-table-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="content-2" class="panel">
+    <div class="search-hero">
+      <div class="chip">🔎 Type a name or symbol number</div>
+    </div>
+    <input id="global-search" class="input" oninput="liveSearch()" type="text" placeholder="e.g. Bhawani Poudyal or 702180086" />
+    <div id="search-results" style="margin-top:16px;"></div>
+  </section>
+
+  <section id="content-3" class="panel">
+    <input id="subject-search" class="input" oninput="filterSubjects()" type="text" placeholder="Search by name or symbol..." />
+    <div class="table-wrap" style="margin-top:12px;">
+      <table>
+        <thead>
+          <tr>
+            <th>Symbol</th>
+            <th>Name</th>
+            <th class="center">Macro</th>
+            <th class="center">Comm</th>
+            <th class="center">Cost</th>
+            <th class="center">OB / HRM</th>
+            <th class="center">Fin Mgmt</th>
+          </tr>
+        </thead>
+        <tbody id="subjects-table-body"></tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<nav class="bottom-nav" aria-label="Bottom navigation">
+  <button class="nav-btn active" id="nav-0" onclick="switchTab(0)"><span class="nav-ico">📊</span><span>Summary</span></button>
+  <button class="nav-btn" id="nav-1" onclick="switchTab(1)"><span class="nav-ico">📋</span><span>Results</span></button>
+  <button class="nav-btn" id="nav-2" onclick="switchTab(2)"><span class="nav-ico">🔍</span><span>Search</span></button>
+  <button class="nav-btn" id="nav-3" onclick="switchTab(3)"><span class="nav-ico">📈</span><span>Subjects</span></button>
+</nav>
+
+  </div>  <script>
+    const XLSX_FILE = 'results.xlsx';
+    let resultsData = [];
+    let subjectsData = [];
+
+    const fieldMap = {
+      rank: ['Rank', 'rank'],
+      symbol: ['Symbol No.', 'Symbol', 'symbol'],
+      name: ['Student Name', 'Name', 'student name'],
+      percent: ['Percentage %', 'Percentage', '%', 'percent'],
+      result: ['Result', 'result']
+    };
+
+    function getField(row, keys, fallback = '') {
+      for (const key of keys) {
+        if (row && row[key] !== undefined && row[key] !== null && String(row[key]).trim() !== '') {
+          return row[key];
+        }
+      }
+      return fallback;
+    }
+
+    function normalizeText(value) {
+      return String(value ?? '').toLowerCase().trim();
+    }
+
+    function toNumber(value) {
+      const n = parseFloat(String(value).replace(/[^0-9.-]/g, ''));
+      return Number.isFinite(n) ? n : 0;
+    }
+
+    function escapeHtml(str) {
+      return String(str ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+    }
+
+    async function loadExcelFile() {
+      const body = document.body;
+      try {
+        showLoadingState();
+        const response = await fetch(XLSX_FILE, { cache: 'no-store' });
+        if (!response.ok) throw new Error('File not found');
+
+        const arrayBuffer = await response.arrayBuffer();
+        const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+
+        const resultsSheet = workbook.Sheets['📋 Results'];
+        if (!resultsSheet) throw new Error("Sheet '📋 Results' not found");
+        resultsData = XLSX.utils.sheet_to_json(resultsSheet, { range: 3, defval: '' })
+          .filter(row => getField(row, fieldMap.rank) && getField(row, fieldMap.symbol));
+
+        const subjectsSheet = workbook.Sheets['📊 Subject Breakdown'];
+        if (!subjectsSheet) throw new Error("Sheet '📊 Subject Breakdown' not found");
+        const rawSubjects = XLSX.utils.sheet_to_json(subjectsSheet, { range: 2, defval: '' });
+        subjectsData = rawSubjects.map(cleanSubjectRow).filter(row => getField(row, ['Symbol', 'Symbol No.', 'symbol']) || getField(row, ['Name', 'Student Name', 'name']));
+
+        document.getElementById('total-students').textContent = resultsData.length;
+
+        renderSummary();
+        renderAllResults();
+        renderSubjectsTable();
+
+        if (!resultsData.length) {
+          showGlobalMessage('No student records found in the Results sheet.');
+        }
+      } catch (e) {
+        console.error(e);
+        showGlobalError("Could not load results.xlsx. Make sure the file is in the same folder as this HTML and the sheet names match exactly.");
+      }
+    }
+
+    function cleanSubjectRow(row) {
+      const output = {};
+      Object.keys(row || {}).forEach(key => {
+        const cleanKey = String(key).replace(/\n/g, ' ').replace(/\s+/g, ' ').trim();
+        output[cleanKey] = row[key];
+      });
+      return output;
+    }
+
+    function showLoadingState() {
+      document.getElementById('results-table-body').innerHTML = `
+        <tr><td colspan="5"><div class="loading"><span class="spinner"></span> Loading results...</div></td></tr>
+      `;
+      document.getElementById('subjects-table-body').innerHTML = `
+        <tr><td colspan="7"><div class="loading"><span class="spinner"></span> Loading subjects...</div></td></tr>
+      `;
+      document.getElementById('search-results').innerHTML = `<div class="loading"><span class="spinner"></span> Preparing search index...</div>`;
+    }
+
+    function showGlobalError(message) {
+      const html = `<div class="error-box">${escapeHtml(message)}</div>`;
+      document.getElementById('results-table-body').innerHTML = `<tr><td colspan="5">${html}</td></tr>`;
+      document.getElementById('subjects-table-body').innerHTML = `<tr><td colspan="7">${html}</td></tr>`;
+      document.getElementById('search-results').innerHTML = html;
+    }
+
+    function showGlobalMessage(message) {
+      const html = `<div class="empty">${escapeHtml(message)}</div>`;
+      document.getElementById('search-results').innerHTML = html;
+    }
+
+    function renderSummary() {
+      if (!resultsData.length) return;
+
+      const passed = resultsData.filter(r => normalizeText(getField(r, fieldMap.result)) === 'pass');
+      const failed = resultsData.filter(r => normalizeText(getField(r, fieldMap.result)) === 'fail');
+      const passRate = resultsData.length ? ((passed.length / resultsData.length) * 100).toFixed(1) : '0.0';
+
+      const sortedByPercent = [...resultsData].sort((a, b) => toNumber(getField(b, fieldMap.percent)) - toNumber(getField(a, fieldMap.percent)));
+      const highest = sortedByPercent[0] || {};
+      const highestFail = [...failed].sort((a, b) => toNumber(getField(b, fieldMap.percent)) - toNumber(getField(a, fieldMap.percent)))[0] || {};
+      const avg = resultsData.length
+        ? (resultsData.reduce((sum, r) => sum + toNumber(getField(r, fieldMap.percent)), 0) / resultsData.length).toFixed(1)
+        : '0.0';
+
+      document.getElementById('passed-count').textContent = passed.length;
+      document.getElementById('failed-count').textContent = failed.length;
+      document.getElementById('pass-rate').textContent = `${passRate}%`;
+      document.getElementById('highest-score').textContent = `${toNumber(getField(highest, fieldMap.percent)).toFixed(1)}%`;
+      document.getElementById('highest-name').textContent = getField(highest, fieldMap.name, '-') || '-';
+      document.getElementById('highest-fail').textContent = `${toNumber(getField(highestFail, fieldMap.percent)).toFixed(1)}%`;
+      document.getElementById('highest-fail-name').textContent = getField(highestFail, fieldMap.name, '-') || '-';
+      document.getElementById('avg-score').textContent = `${avg}%`;
+    }
+
+    function renderAllResults(filteredData = null) {
+      const tbody = document.getElementById('results-table-body');
+      const data = filteredData || resultsData;
+      tbody.innerHTML = '';
+
+      if (!data.length) {
+        tbody.innerHTML = `<tr><td colspan="5"><div class="empty">No students found.</div></td></tr>`;
+        return;
+      }
+
+      data.forEach((student, index) => {
+        const result = normalizeText(getField(student, fieldMap.result));
+        const percent = toNumber(getField(student, fieldMap.percent));
+        const isPass = result === 'pass';
+        const rank = getField(student, fieldMap.rank, index + 1);
+        const symbol = getField(student, fieldMap.symbol, '-');
+        const name = getField(student, fieldMap.name, '-');
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="mono">${escapeHtml(rank)}</td>
+          <td class="mono">${escapeHtml(symbol)}</td>
+          <td>
+            <div class="name">${escapeHtml(name)}</div>
+            <div class="subtle">${escapeHtml(isPass ? 'PASS VAKA MANXE HARU 🤧' : 'FAIL VAKA MANXE HARU 😩')}</div>
+          </td>
+          <td class="right ${isPass ? 'text-green' : 'text-red'}" style="font-weight:800;">${percent.toFixed(1)}%</td>
+          <td class="center"><span class="badge ${isPass ? 'pass' : 'fail'}">${isPass ? '✅ PASS' : '❌ FAIL'}</span></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function filterResults() {
+      const searchTerm = normalizeText(document.getElementById('results-search').value);
+      const filterType = document.getElementById('results-filter').value;
+
+      let filtered = [...resultsData];
+      if (filterType !== 'all') {
+        filtered = filtered.filter(s => normalizeText(getField(s, fieldMap.result)) === normalizeText(filterType));
+      }
+      if (searchTerm) {
+        filtered = filtered.filter(s =>
+          normalizeText(getField(s, fieldMap.name)).includes(searchTerm) ||
+          normalizeText(getField(s, fieldMap.symbol)).includes(searchTerm)
+        );
+      }
+      renderAllResults(filtered);
+    }
+
+    function liveSearch() {
+      const term = normalizeText(document.getElementById('global-search').value);
+      const container = document.getElementById('search-results');
+      container.innerHTML = '';
+
+      if (!term) {
+        container.innerHTML = `<div class="empty">Start typing to search the full result list.</div>`;
+        return;
+      }
+
+      const matches = resultsData.filter(s =>
+        normalizeText(getField(s, fieldMap.name)).includes(term) ||
+        normalizeText(getField(s, fieldMap.symbol)).includes(term)
+      ).slice(0, 12);
+
+      if (!matches.length) {
+        container.innerHTML = `<div class="empty">No matches for <strong>${escapeHtml(term)}</strong>.</div>`;
+        return;
+      }
+
+      matches.forEach(student => {
+        const percent = toNumber(getField(student, fieldMap.percent));
+        const result = normalizeText(getField(student, fieldMap.result));
+        const isPass = result === 'pass';
+        const card = document.createElement('div');
+        card.className = 'result-card';
+        card.innerHTML = `
+          <div>
+            <div class="name">${escapeHtml(getField(student, fieldMap.name, '-'))}</div>
+            <div class="subtle mono" style="margin-top:6px;">${escapeHtml(getField(student, fieldMap.symbol, '-'))} • Rank ${escapeHtml(getField(student, fieldMap.rank, '-'))}</div>
+            <div style="margin-top:10px;"><span class="badge ${isPass ? 'pass' : 'fail'}">${isPass ? 'PASS' : 'FAIL'}</span></div>
+          </div>
+          <div class="result-score">
+            <div class="score-xl ${isPass ? 'text-green' : 'text-red'}">${percent.toFixed(1)}%</div>
+            <div class="subtle" style="margin-top:8px;">${escapeHtml(isPass ? 'Passed' : 'Failed')}</div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function renderSubjectsTable(filtered = null) {
+      const tbody = document.getElementById('subjects-table-body');
+      const data = filtered || subjectsData;
+      tbody.innerHTML = '';
+
+      if (!data.length) {
+        tbody.innerHTML = `<tr><td colspan="7"><div class="empty">No subject data available.</div></td></tr>`;
+        return;
+      }
+
+      data.forEach(row => {
+        const symbol = getField(row, ['Symbol', 'Symbol No.', 'symbol'], '-');
+        const name = getField(row, ['Name', 'Student Name', 'name'], '-');
+        const macro = getField(row, ['Macroeconomics for Business (Marks)', 'Macro'], '-');
+        const comm = getField(row, ['Business Communication (Marks)', 'Comm'], '-');
+        const cost = getField(row, ['Cost & Mgmt. Accounting (Marks)', 'Cost'], '-');
+        const obhrm = getField(row, ['Organizational Behavior & HRM. (Marks)', 'OB/HRM', 'OB HRM'], '-');
+        const fin = getField(row, ['Fundamentals of Financial Mgmt. (Marks)', 'Fin Mgmt', 'Financial Mgmt'], '-');
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="mono">${escapeHtml(symbol)}</td>
+          <td>
+            <div class="name">${escapeHtml(name)}</div>
+          </td>
+          <td class="center">${escapeHtml(macro)}</td>
+          <td class="center">${escapeHtml(comm)}</td>
+          <td class="center">${escapeHtml(cost)}</td>
+          <td class="center">${escapeHtml(obhrm)}</td>
+          <td class="center">${escapeHtml(fin)}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function filterSubjects() {
+      const term = normalizeText(document.getElementById('subject-search').value);
+      if (!term) {
+        renderSubjectsTable();
+        return;
+      }
+
+      const filtered = subjectsData.filter(row =>
+        normalizeText(getField(row, ['Name', 'Student Name', 'name'])).includes(term) ||
+        normalizeText(getField(row, ['Symbol', 'Symbol No.', 'symbol'])).includes(term)
+      );
+      renderSubjectsTable(filtered);
+    }
+
+    function switchTab(tabIndex) {
+      for (let i = 0; i < 4; i++) {
+        const panel = document.getElementById(`content-${i}`);
+        const tab = document.getElementById(`tab-${i}`);
+        const nav = document.getElementById(`nav-${i}`);
+        if (panel) panel.classList.remove('active');
+        if (tab) tab.classList.remove('active');
+        if (nav) nav.classList.remove('active');
+      }
+      document.getElementById(`content-${tabIndex}`).classList.add('active');
+      document.getElementById(`tab-${tabIndex}`).classList.add('active');
+      document.getElementById(`nav-${tabIndex}`).classList.add('active');
+    }
+
+    window.addEventListener('load', loadExcelFile);
+  </script></body>
+</html>
